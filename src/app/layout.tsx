@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import MainLayout from "@/components/layout/MainLayout";
 import MenuContextProvider, { MenuContext } from "@/context/MenuContext";
+import { AuthProvider } from "@/context/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,11 +28,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <MenuContextProvider>
-          <MainLayout>
-            {children}
-          </MainLayout>
-        </MenuContextProvider>
+        <AuthProvider>
+          <MenuContextProvider>
+            <MainLayout>
+              {children}
+            </MainLayout>
+          </MenuContextProvider>
+        </AuthProvider>
       </body>
     </html>
   );
