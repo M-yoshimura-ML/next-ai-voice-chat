@@ -29,6 +29,10 @@ const MainLayout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
                             </li>
                             <li className="flex justify-start items-center p-2 hover:bg-blue-200 rounded-lg transition duration-200 ease-in-out">
                                 <GrLogin className="mr-2" />
+                                <Link href="/signup">Signup</Link>
+                            </li>
+                            <li className="flex justify-start items-center p-2 hover:bg-blue-200 rounded-lg transition duration-200 ease-in-out">
+                                <GrLogin className="mr-2" />
                                 <Link href="/login">Login</Link>
                             </li>
                             <li className="flex justify-start items-center p-2 hover:bg-blue-200 rounded-lg transition duration-200 ease-in-out">
