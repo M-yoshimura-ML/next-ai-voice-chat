@@ -3,12 +3,30 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { loginUser } from "@/lib/api";
+import { jwtDecode } from "jwt-decode";
 
 type AuthContextType = {
     isAuthenticated: boolean;
     login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
     logout: () => void;
 };
+
+type DecodedToken = {
+    exp: number;
+    iat: number;
+    sub: string;
+}
+
+const isTokenValid = (token: string): boolean => {
+    try {
+        const decodedToken = jwtDecode<DecodedToken>(token);
+        const currentTime = Math.floor(Date.now() / 1000); 
+        return decodedToken.exp > currentTime;
+    } catch (error) {
+        console.error("Token validation error:", error);
+        return false;
+    }
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -18,8 +36,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         const token = localStorage.getItem("access_token");
-        if (token) {
+        if (token && isTokenValid(token)) {
             setIsAuthenticated(true);
+        } else {
+            logout()
         }
     }, []);
 
@@ -43,6 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const logout = () => {
+        setIsAuthenticated(false);
         localStorage.removeItem("access_token");
         localStorage.removeItem("token_type");
         router.push("/login");

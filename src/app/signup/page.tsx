@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from "@/context/AuthContext"; 
+import { useRouter } from "next/navigation";
 import { signupUser } from '@/lib/api';
 
 const Signup = () => {
@@ -9,6 +11,15 @@ const Signup = () => {
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState<string | null>(null);
     const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
+    const { isAuthenticated } = useAuth();
+
+    const router = useRouter();
+    
+        useEffect(() => {
+            if (isAuthenticated) {
+                router.push("/chat"); 
+            }
+        }, [isAuthenticated, router]);
   
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
