@@ -2,21 +2,26 @@
 
 import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext"; 
+import { useRouter } from "next/navigation";
 
 export default function Login() {
     const { login } = useAuth();
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
 
-        const success = await login(username, password);
-        if (!success) {
-            setError("Invalid username or password");
+        const result = await login(email, password);
+        if (result.success) {
+            router.push("/chat"); 
+        } else {
+            setError(result.message || "Login failed. Please try again.");
         }
+
     };
 
     return (
@@ -24,12 +29,12 @@ export default function Login() {
         <h1 className="text-3xl font-bold mb-4">Login</h1>
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-96">
             <div className="mb-4">
-                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">email</label>
                 <input 
                     type="text" 
-                    id="username" 
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    id="email" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="border border-gray-300 rounded p-2 w-full" />
             </div>
             <div className="mb-4">

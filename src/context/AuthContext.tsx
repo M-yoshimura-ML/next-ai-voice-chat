@@ -1,47 +1,55 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-
-type User = {
-    username: string;
-};
+import { loginUser } from "@/lib/api";
 
 type AuthContextType = {
-    user: User | null;
-    login: (username: string, password: string) => Promise<boolean>;
+    isAuthenticated: boolean;
+    login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
     logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [user, setUser] = useState<User | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const router = useRouter();
 
-    const login = async (username: string, password: string): Promise<boolean> => {
-        // 🧪 dummy user（Fixed later to use API）
-        const dummyUser = {
-            username: "testuser",
-            password: "password123",
-        };
+    useEffect(() => {
+        const token = localStorage.getItem("access_token");
+        if (token) {
+            setIsAuthenticated(true);
+        }
+    }, []);
 
-        if (username === dummyUser.username && password === dummyUser.password) {
-            setUser({ username });
-            router.push("/chat");
-            return true;
+    const login = async (email: string, password: string) => {
+        try {
+            const response = await loginUser({ email, password });
+            if (response.status === 200 && response.data) {
+                localStorage.setItem("access_token", response.data.access_token);
+                localStorage.setItem("token_type", response.data.token_type);
+                setIsAuthenticated(true);
+                //router.push("/chat");
+                return { success: true, message: "Login successful" };
+            } else {
+                return { success: false, message: response.message || "Login failed" };
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            return { success: false, message: "An error occurred during login" };
         }
 
-        return false;
     };
 
     const logout = () => {
-        setUser(null);
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("token_type");
         router.push("/login");
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
