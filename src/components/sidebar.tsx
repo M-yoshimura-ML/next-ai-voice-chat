@@ -1,8 +1,10 @@
 // components/Sidebar.tsx
 import React from "react";
+import { useRouter } from "next/navigation";
+import { Conversation } from '../models/commons'
 
 interface SidebarProps {
-  conversations: string[];
+  conversations: Conversation[];
   onNewConversation: () => void;
   onSelectConversation: (index: number) => void;
   selectedIndex: number;
@@ -14,6 +16,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   onSelectConversation,
   selectedIndex,
 }) => {
+  const router = useRouter();
+  const handleSelectedConversation = (id: string) => {
+    router.push(`/chat2/${id}`); 
+  }
+
   return (
     <aside className="w-64 bg-gray-900 text-white p-4">
       <button
@@ -23,15 +30,15 @@ const Sidebar: React.FC<SidebarProps> = ({
         + New Chat
       </button>
       <ul>
-        {conversations.map((title, index) => (
+        {conversations.map((conversation, index) => (
           <li
             key={index}
             className={`mb-2 cursor-pointer p-2 rounded hover:bg-gray-800 ${
               selectedIndex === index ? "bg-gray-800" : ""
             }`}
-            onClick={() => onSelectConversation(index)}
+            onClick={() => handleSelectedConversation(conversation.id.toString())}
           >
-            {title}
+            {conversation.title}
           </li>
         ))}
       </ul>
