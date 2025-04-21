@@ -2,39 +2,49 @@ import React from 'react';
 import { IoMdSend } from "react-icons/io";
 import { FaMicrophone } from "react-icons/fa";
 import { Conversation }  from '../models/commons';
-
-const dummy_messages = [
-    {"role": "user", "message": "Hello!"},
-    {"role": "AI", "message": "Hello! How can I help you?"},
-    {"role": "user", "message": "I have a question about my order."},
-    {"role": "AI", "message": "Sure! What would you like to know?"},
-    {"role": "user", "message": "Can you provide me with the tracking number?"},
-]
+import { chatWithText } from '@/lib/openai_api';
+import { ApiResponse, Message } from '../models/commons';
 
 
 interface MainChatProps {
     conversations: Conversation[];
     selectedIndex: number;
-  }
+}
 
 const MainChat: React.FC<MainChatProps> = ({
     conversations,
     selectedIndex
 }) => {
-    const [messages, setMessages] = React.useState(dummy_messages);
+    const [messages, setMessages] = React.useState<Message[]>([]);
     const [inputValue, setInputValue] = React.useState('');
+
     const sendMessage = () => {
-        if (inputValue.trim() === '') return; // Prevent sending empty messages
-        setMessages((prev) => [...prev, {role: 'user', message: inputValue}]);
+        if (inputValue.trim() === '') return;
+        let history: Message[] = [];
+        if (messages.length >= 0) {
+            //history = messages.slice(messages.length - 5, messages.length);
+            history = [...messages];
+        }
+        setMessages((prev) => [...prev, {role: 'user', content: inputValue}]);
         const newMessage = inputValue;
-        getAIResponse(newMessage); // Call AI response function
+        getAIResponse(newMessage, history);
         setInputValue('');
     }
 
-    const getAIResponse = (message: string) => {
-        // Simulate AI response for now
-        const aiResponse = `AI response to: ${message}`; // Replace with actual AI logic
-        setMessages((prev) => [...prev, {role: 'AI', message: aiResponse}]);
+    const getAIResponse = async(message: string, history: Message[]) => {
+        const chatPayload = {
+            message: message,
+            history: history, 
+            language: 'en',
+        }
+        const aiResponse: ApiResponse<string> = await chatWithText(chatPayload); 
+        let aiAnswer = aiResponse?.data ?? "Sorry, I can't help you with that.";
+
+        // if (aiAnswer) {
+        //     // Simulate AI response delay
+        //     await new Promise(resolve => setTimeout(resolve, 1000));
+        // }
+        setMessages((prev) => [...prev, {role: 'assistant', content: aiAnswer}]);
     }
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
@@ -149,11 +159,11 @@ const MainChat: React.FC<MainChatProps> = ({
             {/* Display Chat Content */}
             <div className="space-y-4 mx-8">
                 {messages.map((msg, index) => (
-                    <div key={index} className={`text-${msg.role === 'user' ? 'right' : 'left'}`}>
-                        <p className={`bg-${msg.role === 'user' ? 'blue-100' : 'gray-100'} inline-block p-3 rounded`}>
-                            {msg.message}
+                    <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        <p className={`bg-${msg.role === 'user' ? 'blue-100' : 'gray-100'} inline-block p-3 rounded shadow max-w-md`}>
+                            {msg.content}
                         </p>
-                        {msg.role === 'AI' && <button className="text-sm text-blue-500 mt-1">🔊 Play</button>}
+                        {msg.role === 'assistant' && <button className="text-sm text-blue-500 mt-1">🔊 Play</button>}
                     </div>
                 ))}
             </div>
@@ -162,6 +172,7 @@ const MainChat: React.FC<MainChatProps> = ({
             {/* Input area（audio or text） */}
             <div className="p-4 border-t flex items-center space-x-2 m-8">
                 <input 
+                    value={inputValue}
                     onChange={handleChange}
                     onKeyDown={handleKeyDown}
                     type="text" 
