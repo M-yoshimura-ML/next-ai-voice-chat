@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { loginUser } from "@/lib/api";
+import { loginUser, refreshToken } from "@/lib/api";
 import { jwtDecode } from "jwt-decode";
 
 type AuthContextType = {
@@ -28,16 +28,29 @@ const isTokenValid = (token: string): boolean => {
     }
 }
 
+const getTokenExpiration = (token: string): number | null => {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.exp ? payload.exp * 1000 : null; // conver to ms
+    } catch (e) {
+      return null;
+    }
+  };
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [token, setToken] = useState<string | null>(null);
+    const refreshTimeout = useRef<NodeJS.Timeout | null>(null);
     const router = useRouter();
 
     useEffect(() => {
-        const token = localStorage.getItem("access_token");
-        if (token && isTokenValid(token)) {
+        const access_token = localStorage.getItem("access_token");
+        if (access_token && isTokenValid(access_token)) {
             setIsAuthenticated(true);
+            setToken(access_token);
+            scheduleTokenRefresh(access_token); // set the refresh time
         } else {
             logout()
         }
@@ -47,10 +60,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
             const response = await loginUser({ email, password });
             if (response.status === 200 && response.data) {
-                localStorage.setItem("access_token", response.data.access_token);
-                localStorage.setItem("token_type", response.data.token_type);
+                const { access_token, token_type } = response.data;
+                localStorage.setItem("access_token", access_token);
+                localStorage.setItem("token_type", token_type);
                 setIsAuthenticated(true);
-                //router.push("/chat");
+                setToken(access_token);
+
+                scheduleTokenRefresh(access_token); // set the refresh time
+
                 return { success: true, message: "Login successful" };
             } else {
                 return { success: false, message: response.message || "Login failed" };
@@ -66,7 +83,51 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsAuthenticated(false);
         localStorage.removeItem("access_token");
         localStorage.removeItem("token_type");
+        setToken(null);
+        if (refreshTimeout.current) {
+            clearTimeout(refreshTimeout.current);
+        }
         router.push("/login");
+
+    };
+
+    const scheduleTokenRefresh = (token: string) => {
+        const exp = getTokenExpiration(token);
+        if (!exp) return;
+    
+        const now = Date.now();
+        const refreshTime = exp - now - 5 * 60 * 1000; // Refresh 5 minutes before expiration
+    
+        if (refreshTimeout.current) {
+            clearTimeout(refreshTimeout.current);
+        }
+    
+        if (refreshTime > 0) {
+            refreshTimeout.current = setTimeout(() => {
+                doRefreshToken();
+            }, refreshTime);
+        }
+    };
+
+    const doRefreshToken = async () => {
+        try {
+          const res = await refreshToken();
+    
+          if (res.status === 200 && res.data) {
+            const { access_token, token_type } = res.data;
+            localStorage.setItem("access_token", access_token);
+            localStorage.setItem("token_type", token_type);
+            setToken(access_token);
+            setIsAuthenticated(true);
+            scheduleTokenRefresh(access_token); // set the next refresh time
+            console.log("Token refreshed successfully");
+          } else {
+            logout();
+          }
+        } catch (err) {
+          console.error("Token refresh failed:", err);
+          logout();
+        }
     };
 
     return (
