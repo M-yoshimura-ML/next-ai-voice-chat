@@ -1,13 +1,9 @@
+import { ApiResponse } from '../models/commons';
+
 export interface SignupPayload {
     name: string;
     email: string;
     password: string;
-}
-  
-export interface ApiResponse<T = unknown> {
-    status: number;
-    message: string | null;
-    data: T | null;
 }
   
 export async function signupUser(payload: SignupPayload): Promise<ApiResponse> {
