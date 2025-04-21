@@ -50,4 +50,24 @@ export async function loginUser(payload: LoginPayload): Promise<ApiResponse<Logi
         data: data.data,
     };
 }
+
+
+export async function refreshToken(): Promise<ApiResponse<LoginResponseData>> {
+    const token = localStorage.getItem("access_token");
+    const tokenType = localStorage.getItem("token_type") || "Bearer";
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/refresh-token`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `${tokenType} ${token}`,
+        },
+    });
   
+    const data = await res.json();
+    return {
+        status: data.status,
+        message: data.message,
+        data: data.data,
+    };
+}
