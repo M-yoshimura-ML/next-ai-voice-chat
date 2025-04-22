@@ -34,4 +34,16 @@ export const getUserConversations = async (user_id: string) => {
     });
     return await response.json();
 };
-  
+
+
+export const getMessages = async (conversation_id: string) => {
+    const token = localStorage.getItem("access_token");
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/conversation-messages?conversation_id=${conversation_id}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+        },
+    });
+    return await response.json();
+};

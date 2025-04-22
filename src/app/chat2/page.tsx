@@ -5,8 +5,8 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "../../components/sidebar";
 import MainChat from "@/components/MainChat";
-import { Conversation } from "@/models/commons";
-import { getUserConversations } from "@/lib/conversation_api";
+import { Conversation, Message } from "@/models/commons";
+import { getUserConversations, getMessages } from "@/lib/conversation_api";
 
 export interface ChatPageProps {
   conversationId: string | null;
@@ -14,6 +14,8 @@ export interface ChatPageProps {
 
 const ChatPage2: React.FC<ChatPageProps> = ({conversationId}) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [loading, setLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const router = useRouter();
 
@@ -22,14 +24,34 @@ const ChatPage2: React.FC<ChatPageProps> = ({conversationId}) => {
     let fetchedConversations: Conversation[] = [];
     if (user_id) {
       const result = await getUserConversations(user_id);
-      fetchedConversations = result.data
+      fetchedConversations = result.data ? result.data : [];
     }
     setConversations(fetchedConversations);
   }
 
+  const fetchMessages = async (conversationId: string) => {
+    let fetchedMessages: Message[] = [];
+    const result = await getMessages(conversationId);
+    if (result.status === 200) {
+      fetchedMessages = result.data;
+    } else {
+      console.error("Error fetching messages:", result.message);
+    }
+    setMessages(fetchedMessages);
+  }
+
   useEffect(() => {
-      fetchConversations();
+    setLoading(true);
+    fetchConversations();
+    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    console.log("conversationId", conversationId);
+    if (conversationId) {
+      fetchMessages(conversationId);
+    }
+  }, [conversationId]);
 
   const handleNewConversation = () => {
     router.push("/chat2")
@@ -52,6 +74,7 @@ const ChatPage2: React.FC<ChatPageProps> = ({conversationId}) => {
       {/* Chat Area */}
       <MainChat
         conversationId={conversationId}
+        messageList={messages}
       />
     </div>
   );
