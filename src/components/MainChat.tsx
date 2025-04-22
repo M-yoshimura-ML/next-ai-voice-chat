@@ -1,27 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { IoMdSend } from "react-icons/io";
 import { FaMicrophone } from "react-icons/fa";
 import { useRouter } from 'next/navigation';
 import { createConversationAndMessages } from '@/lib/conversation_api';
 import { chatWithText } from '@/lib/openai_api';
-import { ApiResponse, Message } from '../models/commons';
+import { ApiResponse, MessageBase, Message } from '../models/commons';
 
 
 interface MainChatProps {
     conversationId: string | null;
+    messageList: Message[] | [];
 }
 
 const MainChat: React.FC<MainChatProps> = ({
-    conversationId
+    conversationId,
+    messageList,
 }) => {
-    const [messages, setMessages] = React.useState<Message[]>([]);
+    const [messages, setMessages] = React.useState<(MessageBase | Message)[]>(messageList);
     const [inputValue, setInputValue] = React.useState('');
     const router = useRouter();
     const [isRecording, setIsRecording] = React.useState(false);
 
+    useEffect(() => {
+        if (messageList.length > 0) {
+            setMessages(messageList);
+        }
+    }
+    , [messageList]);
+
     const sendMessage = async() => {
         if (inputValue.trim() === '') return;
-        let history: Message[] = [];
+        let history: MessageBase[] = [];
         if (messages.length >= 0) {
             //history = messages.slice(messages.length - 5, messages.length);
             history = [...messages];
@@ -59,7 +68,7 @@ const MainChat: React.FC<MainChatProps> = ({
         }
     }
 
-    const getAIResponse = async(message: string, history: Message[]) => {
+    const getAIResponse = async(message: string, history: MessageBase[]) => {
         const chatPayload = {
             message: message,
             history: history, 

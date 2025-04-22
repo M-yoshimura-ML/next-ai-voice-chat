@@ -11,13 +11,21 @@ export interface Conversation {
     createdAt: string;
 }
 
-export interface Message {
+export interface MessageBase {
     role: string;
     content: string;
 }
 
+export interface Message extends MessageBase {
+    id: string;
+    translatedContent: string | null;
+    conversationId: string;
+    audioUrl: string | null;
+    createdAt: string;
+}
+
 export interface chatPayload {
     message: string;
-    history: Message[] | [];
+    history: MessageBase[] | [];
     language: string;
 }
