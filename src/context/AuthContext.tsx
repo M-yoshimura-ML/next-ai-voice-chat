@@ -35,7 +35,17 @@ const getTokenExpiration = (token: string): number | null => {
     } catch (e) {
       return null;
     }
-  };
+};
+
+const getUserId = (token: string): string | null => {
+    try {
+        const decodedToken = jwtDecode<DecodedToken>(token);
+        return decodedToken.sub || null;
+    } catch (error) {
+        console.error("Error decoding token:", error);
+        return null;
+    }
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -63,6 +73,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 const { access_token, token_type } = response.data;
                 localStorage.setItem("access_token", access_token);
                 localStorage.setItem("token_type", token_type);
+                const userId = getUserId(access_token);
+                if (userId) {
+                    localStorage.setItem("user_id", userId);
+                } else {
+                    console.error("User ID not found in token");
+                }
                 setIsAuthenticated(true);
                 setToken(access_token);
 
@@ -83,6 +99,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsAuthenticated(false);
         localStorage.removeItem("access_token");
         localStorage.removeItem("token_type");
+        localStorage.removeItem("user_id");
         setToken(null);
         if (refreshTimeout.current) {
             clearTimeout(refreshTimeout.current);

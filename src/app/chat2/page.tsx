@@ -6,35 +6,32 @@ import { useRouter } from "next/navigation";
 import Sidebar from "../../components/sidebar";
 import MainChat from "@/components/MainChat";
 import { Conversation } from "@/models/commons";
+import { getUserConversations } from "@/lib/conversation_api";
 
-const dummyConversations = [
-  {id: 1, title: "Chat 1", userId: 1},
-  {id: 2, title: "Chat 2", userId: 1},
-  {id: 3, title: "Chat 3", userId: 1},
-  {id: 4, title: "Chat 4", userId: 1},
-  {id: 5, title: "Chat 5", userId: 1},
-]
+export interface ChatPageProps {
+  conversationId: string | null;
+}
 
-const ChatPage2: React.FC = () => {
+const ChatPage2: React.FC<ChatPageProps> = ({conversationId}) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const router = useRouter();
 
   const fetchConversations = async () => {
-    // Fetch conversations from the server or local storage
-    // For now, we'll use dummy data
-    const fetchedConversations = dummyConversations.map((conv:Conversation) => conv);
+    const user_id = localStorage.getItem("user_id");
+    let fetchedConversations: Conversation[] = [];
+    if (user_id) {
+      const result = await getUserConversations(user_id);
+      fetchedConversations = result.data
+    }
     setConversations(fetchedConversations);
   }
 
   useEffect(() => {
-    fetchConversations();
+      fetchConversations();
   }, []);
 
   const handleNewConversation = () => {
-    // const newTitle = `Chat ${conversations.length + 1}`;
-    // setConversations((prev) => [...prev, { id: prev.length + 1, title: newTitle, userId: 1 }]);
-    // setSelectedIndex(conversations.length);
     router.push("/chat2")
   };
 
@@ -54,8 +51,7 @@ const ChatPage2: React.FC = () => {
 
       {/* Chat Area */}
       <MainChat
-        conversations={conversations}
-        selectedIndex={selectedIndex}
+        conversationId={conversationId}
       />
     </div>
   );

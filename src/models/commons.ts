@@ -5,9 +5,10 @@ export interface ApiResponse<T = unknown> {
 }
 
 export interface Conversation {
-    id: number;
+    id: string;
     title: string;
-    userId: number;
+    userId: string;
+    createdAt: string;
 }
 
 export interface Message {

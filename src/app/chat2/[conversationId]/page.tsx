@@ -16,7 +16,7 @@ const ConversationPage: React.FC = () => {
   // Pass messages to the ChatPage2 component
 
   return (
-    <ChatPage2 />
+    <ChatPage2 conversationId={conversationId} />
   );
 };
 
