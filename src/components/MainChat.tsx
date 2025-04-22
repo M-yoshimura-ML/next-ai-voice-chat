@@ -1,24 +1,25 @@
 import React from 'react';
 import { IoMdSend } from "react-icons/io";
 import { FaMicrophone } from "react-icons/fa";
-import { Conversation }  from '../models/commons';
+import { useRouter } from 'next/navigation';
+import { createConversationAndMessages } from '@/lib/conversation_api';
 import { chatWithText } from '@/lib/openai_api';
 import { ApiResponse, Message } from '../models/commons';
 
 
 interface MainChatProps {
-    conversations: Conversation[];
-    selectedIndex: number;
+    conversationId: string | null;
 }
 
 const MainChat: React.FC<MainChatProps> = ({
-    conversations,
-    selectedIndex
+    conversationId
 }) => {
     const [messages, setMessages] = React.useState<Message[]>([]);
     const [inputValue, setInputValue] = React.useState('');
+    const router = useRouter();
+    const [isRecording, setIsRecording] = React.useState(false);
 
-    const sendMessage = () => {
+    const sendMessage = async() => {
         if (inputValue.trim() === '') return;
         let history: Message[] = [];
         if (messages.length >= 0) {
@@ -27,8 +28,35 @@ const MainChat: React.FC<MainChatProps> = ({
         }
         setMessages((prev) => [...prev, {role: 'user', content: inputValue}]);
         const newMessage = inputValue;
-        getAIResponse(newMessage, history);
+        const aiResponse = await getAIResponse(newMessage, history);
         setInputValue('');
+
+        if (!conversationId) {
+            // Create a new conversation and messages
+            const currentUserId = localStorage.getItem("user_id");
+            if (!currentUserId) return;
+            const response = await createConversationAndMessages({
+              user_id: currentUserId,
+              title: null,
+              messages: [
+                {
+                  role: "user",
+                  content: inputValue,
+                  translated_content: null,
+                  audio_url: null
+                },
+                {
+                  role: "assistant",
+                  content: aiResponse.content,
+                  translated_content: null, // ToDo: Add translation logic if needed
+                  audio_url: null // ToDo: Get audio URL from aiResponse
+                }
+              ]
+            });
+          
+            const newConversationId = response.data.conversation_id;
+            router.push(`/chat2/${newConversationId}`);
+        }
     }
 
     const getAIResponse = async(message: string, history: Message[]) => {
@@ -45,6 +73,7 @@ const MainChat: React.FC<MainChatProps> = ({
         //     await new Promise(resolve => setTimeout(resolve, 1000));
         // }
         setMessages((prev) => [...prev, {role: 'assistant', content: aiAnswer}]);
+        return {role: 'assistant', content: aiAnswer};
     }
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
@@ -107,55 +136,10 @@ const MainChat: React.FC<MainChatProps> = ({
         // Handle mute input logic here
         console.log("Mute input clicked");
     }
-    const handleUnmuteClick = () => {
-        // Handle unmute input logic here
-        console.log("Unmute input clicked");
-    }
-    const handleShuffleClick = () => {
-        // Handle shuffle input logic here
-        console.log("Shuffle input clicked");
-    }
-    const handleRepeatClick = () => {
-        // Handle repeat input logic here
-        console.log("Repeat input clicked");
-    }
-    const handleLoopClick = () => {
-        // Handle loop input logic here
-        console.log("Loop input clicked");
-    }
-    const handlePlaylistClick = () => {
-        // Handle playlist input logic here
-        console.log("Playlist input clicked");
-    }
-    const handleQueueClick = () => {
-        // Handle queue input logic here
-        console.log("Queue input clicked");
-    }
-    const handleFavoriteClick = () => {
-        // Handle favorite input logic here
-        console.log("Favorite input clicked");
-    }
-    const handleShareClick = () => {
-        // Handle share input logic here
-        console.log("Share input clicked");
-    }
-    const handleSaveClick = () => {
-        // Handle save input logic here
-        console.log("Save input clicked");
-    }
-    const handleDownloadClick = () => {
-        // Handle download input logic here
-        console.log("Download input clicked");
-    }
-    const handleUploadClick = () => {
-        // Handle upload input logic here
-        console.log("Upload input clicked");
-    }
 
     return (
         <main className="flex-1 flex flex-col bg-white">
             <div className="p-6 overflow-y-auto flex-1">
-            <h1 className="text-2xl font-semibold mb-4">{conversations[selectedIndex]?.title}</h1>
             {/* Display Chat Content */}
             <div className="space-y-4 mx-8">
                 {messages.map((msg, index) => (
