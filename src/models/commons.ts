@@ -14,13 +14,13 @@ export interface Conversation {
 export interface MessageBase {
     role: string;
     content: string;
+    audioUrl: string | null;
+    translatedContent: string | null;
 }
 
 export interface Message extends MessageBase {
     id: string;
-    translatedContent: string | null;
     conversationId: string;
-    audioUrl: string | null;
     createdAt: string;
 }
 
@@ -28,4 +28,9 @@ export interface chatPayload {
     message: string;
     history: MessageBase[] | [];
     language: string;
+}
+
+export interface translatePayload {
+    text: string;
+    target_language: string;
 }

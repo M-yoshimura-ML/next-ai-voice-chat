@@ -3,8 +3,11 @@ import { IoMdSend } from "react-icons/io";
 import { FaMicrophone } from "react-icons/fa";
 import { useRouter } from 'next/navigation';
 import { createConversationAndMessages } from '@/lib/conversation_api';
-import { chatWithText } from '@/lib/openai_api';
+import { chatWithText, translate } from '@/lib/openai_api';
+import { ttsWithAudioUrl } from '@/lib/tts_api';
 import { ApiResponse, MessageBase, Message } from '../models/commons';
+import AudioPlayer from './UI/AudioPlayer';
+import { BsTranslate } from "react-icons/bs";
 
 
 interface MainChatProps {
@@ -35,10 +38,12 @@ const MainChat: React.FC<MainChatProps> = ({
             //history = messages.slice(messages.length - 5, messages.length);
             history = [...messages];
         }
-        setMessages((prev) => [...prev, {role: 'user', content: inputValue}]);
+        setMessages((prev) => [...prev, {role: 'user', content: inputValue, audioUrl: null, translatedContent: null}]);
         const newMessage = inputValue;
         const aiResponse = await getAIResponse(newMessage, history);
         setInputValue('');
+
+        
 
         if (!conversationId) {
             // Create a new conversation and messages
@@ -57,8 +62,8 @@ const MainChat: React.FC<MainChatProps> = ({
                 {
                   role: "assistant",
                   content: aiResponse.content,
-                  translated_content: null, // ToDo: Add translation logic if needed
-                  audio_url: null // ToDo: Get audio URL from aiResponse
+                  translated_content: aiResponse.translatedContent, // ToDo: Add translation logic if needed
+                  audio_url: aiResponse.audioUrl // ToDo: Get audio URL from aiResponse
                 }
               ]
             });
@@ -81,9 +86,17 @@ const MainChat: React.FC<MainChatProps> = ({
         //     // Simulate AI response delay
         //     await new Promise(resolve => setTimeout(resolve, 1000));
         // }
-        setMessages((prev) => [...prev, {role: 'assistant', content: aiAnswer}]);
-        return {role: 'assistant', content: aiAnswer};
+
+        const tranalateResponse = await translate({text:aiAnswer, target_language: 'ja'});
+        const translatedText = tranalateResponse?.data ?? null;
+
+        const ttsResponse = await ttsWithAudioUrl({text:aiAnswer, language:'en' });
+        const audioUrl = ttsResponse?.data?.audio_url ?? null;
+
+        setMessages((prev) => [...prev, {role: 'assistant', content: aiAnswer, audioUrl: audioUrl, translatedContent: translatedText}]);
+        return {role: 'assistant', content: aiAnswer, audioUrl: audioUrl, translatedContent: translatedText};
     }
+
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
             sendMessage();
@@ -152,11 +165,21 @@ const MainChat: React.FC<MainChatProps> = ({
             {/* Display Chat Content */}
             <div className="space-y-4 mx-8">
                 {messages.map((msg, index) => (
+                    console.log("msg", msg),
                     <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <p className={`bg-${msg.role === 'user' ? 'blue-100' : 'gray-100'} inline-block p-3 rounded shadow max-w-md`}>
                             {msg.content}
                         </p>
-                        {msg.role === 'assistant' && <button className="text-sm text-blue-500 mt-1">🔊 Play</button>}
+                        {msg.role === 'assistant' && msg.audioUrl && (
+                            <AudioPlayer audioUrl={msg.audioUrl} />
+                        )}
+                        {msg.role === 'assistant' && msg.translatedContent && (
+                            <BsTranslate className="text-gray-500 cursor-pointer" size={24} onClick={() => {
+                                // Handle translation logic here
+                                console.log("Translated content clicked", msg.translatedContent);
+                            }} />
+                        )}
+
                     </div>
                 ))}
             </div>
