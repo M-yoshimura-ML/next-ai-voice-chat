@@ -34,11 +34,11 @@ const MainLayout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
                                 <>
                                     <li className="flex justify-start items-center p-2 hover:bg-blue-200 rounded-lg transition duration-200 ease-in-out">
                                         <RiVoiceAiLine className="mr-2" />
-                                        <Link href="/chat">Realtime Speak</Link>
+                                        <Link href="/voice-chat">Voice Chat</Link>
                                     </li>
                                     <li className="flex justify-start items-center p-2 hover:bg-blue-200 rounded-lg transition duration-200 ease-in-out">
                                         <MdOutlineRecordVoiceOver className="mr-2" />
-                                        <Link href="/chat2">Voice Chat</Link>
+                                        <Link href="/chat2">Text Chat</Link>
                                     </li>
                                     <li className="flex justify-start items-center p-2 hover:bg-blue-200 rounded-lg transition duration-200 ease-in-out">
                                         <GrProjects className="mr-2" />

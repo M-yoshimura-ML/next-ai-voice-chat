@@ -13,7 +13,7 @@ export default function Login() {
 
     useEffect(() => {
         if (isAuthenticated) {
-            router.push("/chat"); 
+            router.push("/chat2"); 
         }
     }, [isAuthenticated, router]);
 
@@ -23,7 +23,7 @@ export default function Login() {
 
         const result = await login(email, password);
         if (result.success) {
-            router.push("/chat"); 
+            router.push("/chat2"); 
         } else {
             setError(result.message || "Login failed. Please try again.");
         }

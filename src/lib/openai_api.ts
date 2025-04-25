@@ -1,4 +1,4 @@
-import { ApiResponse, chatPayload, translatePayload } from '../models/commons';
+import { ApiResponse, chatPayload, translatePayload, MessageBase } from '../models/commons';
 
   
 export async function chatWithText(payload: chatPayload): Promise<ApiResponse<string>> {
@@ -27,6 +27,27 @@ export async function translate(payload: translatePayload): Promise<ApiResponse<
     const tokenType = localStorage.getItem("token_type") || "Bearer";
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/translate`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `${tokenType} ${token}`,
+        },
+        body: JSON.stringify(payload),
+    });
+  
+    const data = await res.json();
+    return {
+        status: data.status,
+        message: data.message,
+        data: data.data,
+    };
+}
+
+export async function textChat(payload: chatPayload): Promise<ApiResponse<MessageBase>> {
+    const token = localStorage.getItem("access_token");
+    const tokenType = localStorage.getItem("token_type") || "Bearer";
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/text-chat`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
