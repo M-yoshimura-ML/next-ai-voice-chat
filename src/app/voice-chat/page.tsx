@@ -24,9 +24,9 @@ export default function Recorder() {
       const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
       audioChunksRef.current = [];
 
-      // 🎯 APIに送信
       const formData = new FormData();
       formData.append("audio_file", audioBlob, "voice.webm");
+      formData.append("language", "en"); // Set the language hint
       const token = localStorage.getItem("access_token");
       const tokenType = localStorage.getItem("token_type") || "Bearer";
 
@@ -39,12 +39,23 @@ export default function Recorder() {
         },
       });
 
-      // テキストと音声ファイルを受け取る（X-Reply-Text付き）
+      // Get text and audio file（X-Reply-Text）
       const audioBlobResponse = await res.blob();
-      const replyText = res.headers.get("X-Reply-Text") || "No reply";
+      const base64Text = res.headers.get("X-Reply-Text");
+      const replyText = base64Text ? decodeBase64ToUtf8(base64Text) : "No reply";
 
       setResponseText(replyText);
-      setAudioUrl(URL.createObjectURL(audioBlobResponse));
+      const audioUrl = URL.createObjectURL(audioBlobResponse);
+      setAudioUrl(audioUrl);
+
+      const audio = new Audio(audioUrl);
+      try {
+        // Attempt to play the audio automatically (chrome doen't work but Brave does)
+        await audio.play();
+        console.log('Audio playing automatically!');
+      } catch (err) {
+        console.error('Failed to auto-play:', err);
+      }
     };
 
     mediaRecorder.start();
@@ -55,6 +66,14 @@ export default function Recorder() {
     mediaRecorderRef.current?.stop();
     setRecording(false);
   };
+
+  function decodeBase64ToUtf8(base64String: string): string {
+    // Decode Base64 and convert to Uint8Array
+    const decodedBytes = Uint8Array.from(atob(base64String), c => c.charCodeAt(0));
+    // Interpret as UTF-8 with TextDecoder
+    return new TextDecoder().decode(decodedBytes);
+  }
+  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
