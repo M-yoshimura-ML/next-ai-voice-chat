@@ -6,6 +6,8 @@ export default function Recorder() {
   const [recording, setRecording] = useState(false);
   const [responseText, setResponseText] = useState("");
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [userInput, setUserInput] = useState<string>("");
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
@@ -30,6 +32,26 @@ export default function Recorder() {
       const token = localStorage.getItem("access_token");
       const tokenType = localStorage.getItem("token_type") || "Bearer";
 
+      const transcribeResult = await fetch("/api/transcribe", {
+        method: "POST",
+        body: formData,
+        headers: {
+            // 'Content-Type': 'multipart/form-data',
+            'Authorization': `${tokenType} ${token}`,
+        },
+      });
+      
+      if (transcribeResult.ok) {
+        try {
+          const responseJson = await transcribeResult.json();
+          console.log("Full response JSON:", responseJson);
+          console.log("Data from response:", responseJson.data);
+          setUserInput(responseJson.data);
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+        }
+      }
+
       const res = await fetch("/api/voice-chat", {
         method: "POST",
         body: formData,
@@ -47,6 +69,7 @@ export default function Recorder() {
       setResponseText(replyText);
       const audioUrl = URL.createObjectURL(audioBlobResponse);
       setAudioUrl(audioUrl);
+      setIsLoading(false);
 
       const audio = new Audio(audioUrl);
       try {
@@ -65,6 +88,7 @@ export default function Recorder() {
   const stopRecording = () => {
     mediaRecorderRef.current?.stop();
     setRecording(false);
+    setIsLoading(true);
   };
 
   function decodeBase64ToUtf8(base64String: string): string {
@@ -77,21 +101,45 @@ export default function Recorder() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="flex gap-2">
-        <button
-          onClick={recording ? stopRecording : startRecording}
-          className="px-4 py-2 rounded bg-blue-600 text-white"
-        >
-          {recording ? "🎙️ Stop" : "🎤 Start Recording"}
-        </button>
-      </div>
+      <div className="text-2xl font-bold mb-4">Voice Chat</div>
+      <div className="space-y-4 mx-8">
+        {userInput && (
+          <div className="justify-end">
+            <p className="bg-blue-100 inline-block p-3 rounded shadow max-w-md">
+              {userInput}
+            </p>
+          </div>
+        )}
 
-      {responseText && <p className="text-lg mt-2">🤖 AI: {responseText}</p>}
-      {audioUrl && (
-        <audio className="mt-2" controls src={audioUrl}>
-          Your browser does not support the audio element.
-        </audio>
-      )}
+        {isLoading && ( 
+          <div className="flex justify-center items-center mt-4">
+              <img src="/Spinner-5.gif" alt="Loading..." className="w-12 h-12 animate-spin" />
+          </div>
+        )}
+
+        {responseText && (
+          <div className="justify-start">
+            <p className="bg-gray-100 inline-block p-3 rounded shadow max-w-md">
+            🤖 AI:{responseText}
+            </p>
+          </div>
+        )}
+
+        {audioUrl && (
+          <audio className="mt-2" controls src={audioUrl}>
+            Your browser does not support the audio element.
+          </audio>
+        )}
+
+        <div className="flex justify-center items-center mt-4">
+          <button
+            onClick={recording ? stopRecording : startRecording}
+            className="px-4 py-2 rounded bg-blue-600 text-white"
+          >
+            {recording ? "🎙️ Stop" : "🎤 Start Recording"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
