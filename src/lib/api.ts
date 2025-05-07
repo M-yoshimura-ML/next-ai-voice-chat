@@ -1,73 +1,44 @@
 import { ApiResponse } from '../models/commons';
 
-export interface SignupPayload {
-    name: string;
-    email: string;
-    password: string;
+// This file is used to fetch data from the API. It uses the fetch API to make requests to the API.
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL_NEW;
+
+if (!API_BASE_URL) {
+  throw new Error("Missing Base URL for API.");
 }
-  
-export async function signupUser(payload: SignupPayload): Promise<ApiResponse> {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/signup`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-    });
-  
-    const data = await res.json();
-    return {
-        status: data.status,
-        message: data.message,
-        data: data.data,
+
+export async function fetchJson<T = any>(
+  endpoint: string, // not full URL, path only like `/signup`
+  options?: RequestInit
+): Promise<ApiResponse<T>> {
+  const url = `${API_BASE_URL}${endpoint}`;
+
+  const res = await fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options?.headers || {}),
+    },
+  });
+
+  let data;
+  try {
+    data = await res.json();
+  } catch (e) {
+    data = { message: 'Invalid JSON response' };
+  }
+
+  if (!res.ok) {
+    throw {
+      status: res.status,
+      message: data?.message || 'Something went wrong',
     };
+  }
+
+  return {
+    status: res.status,
+    message: data?.message,
+    data: data?.data,
+  };
 }
 
-
-export interface LoginPayload {
-    email: string;
-    password: string;
-}
-  
-export interface LoginResponseData {
-    access_token: string;
-    token_type: string;
-}
-  
-export async function loginUser(payload: LoginPayload): Promise<ApiResponse<LoginResponseData>> {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/login`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-    });
-  
-    const data = await res.json();
-    return {
-        status: data.status,
-        message: data.message,
-        data: data.data,
-    };
-}
-
-
-export async function refreshToken(): Promise<ApiResponse<LoginResponseData>> {
-    const token = localStorage.getItem("access_token");
-    const tokenType = localStorage.getItem("token_type") || "Bearer";
-
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/refresh-token`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `${tokenType} ${token}`,
-        },
-    });
-  
-    const data = await res.json();
-    return {
-        status: data.status,
-        message: data.message,
-        data: data.data,
-    };
-}

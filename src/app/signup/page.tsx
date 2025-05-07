@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from "@/context/AuthContext"; 
 import { useRouter } from "next/navigation";
-import { signupUser } from '@/lib/api';
+import { signupUser } from '@/lib/auth_api';
 
 const Signup = () => {
     const [name, setName] = useState("");
@@ -26,16 +26,20 @@ const Signup = () => {
 
         try {
             const response = await signupUser({ name, email, password });
-            setMessage(response.message);
-            setIsSuccess(response.status === 200);
             if (response.status === 200) {
+                setMessage(response.message);
+                setIsSuccess(true);
                 setName("");
                 setEmail("");
                 setPassword("");
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error("Signup error:", err);
-            setMessage("Server error. Please try again later.");
+            if (err.status === 400 || err.status === 422) {
+                setMessage(err.message);
+             } else {
+                setMessage("Server error. Please try again later.");
+            }
             setIsSuccess(false);
         }
     };
