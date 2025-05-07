@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { loginUser, refreshToken } from "@/lib/api";
+import { loginUser, refreshToken } from "@/lib/auth_api";
 import { jwtDecode } from "jwt-decode";
 
 type AuthContextType = {
@@ -88,9 +88,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             } else {
                 return { success: false, message: response.message || "Login failed" };
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Login error:", error);
-            return { success: false, message: "An error occurred during login" };
+            return { success: false, message: error?.message || "An error occurred during login" };
         }
 
     };

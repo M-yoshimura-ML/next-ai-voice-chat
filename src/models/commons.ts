@@ -4,6 +4,22 @@ export interface ApiResponse<T = unknown> {
     data: T | null;
 }
 
+export interface SignupPayload {
+    name: string;
+    email: string;
+    password: string;
+}
+
+export interface LoginPayload {
+    email: string;
+    password: string;
+}
+  
+export interface LoginResponseData {
+    access_token: string;
+    token_type: string;
+}
+
 export interface Conversation {
     id: string;
     title: string;
