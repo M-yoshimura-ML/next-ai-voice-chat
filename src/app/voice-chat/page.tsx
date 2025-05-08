@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import Spinner from "@/components/UI/Spiner/SimpleSpiner";
 
 export default function Recorder() {
   const [recording, setRecording] = useState(false);
@@ -100,46 +102,48 @@ export default function Recorder() {
   
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="text-2xl font-bold mb-4">Voice Chat</div>
-      <div className="space-y-4 mx-8">
-        {userInput && (
-          <div className="justify-end">
-            <p className="bg-blue-100 inline-block p-3 rounded shadow max-w-md">
-              {userInput}
-            </p>
-          </div>
-        )}
+    <ProtectedRoute>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+        <div className="text-2xl font-bold mb-4">Voice Chat</div>
+        <div className="space-y-4 mx-8">
+          {userInput && (
+            <div className="justify-end">
+              <p className="bg-blue-100 inline-block p-3 rounded shadow max-w-md">
+                {userInput}
+              </p>
+            </div>
+          )}
 
-        {isLoading && ( 
+          {isLoading && ( 
+            <div className="flex justify-center items-center mt-4">
+                <Spinner />
+            </div>
+          )}
+
+          {responseText && (
+            <div className="justify-start">
+              <p className="bg-gray-100 inline-block p-3 rounded shadow max-w-md">
+              🤖 AI:{responseText}
+              </p>
+            </div>
+          )}
+
+          {audioUrl && (
+            <audio className="mt-2" controls src={audioUrl}>
+              Your browser does not support the audio element.
+            </audio>
+          )}
+
           <div className="flex justify-center items-center mt-4">
-              <img src="/Spinner-5.gif" alt="Loading..." className="w-12 h-12 animate-spin" />
+            <button
+              onClick={recording ? stopRecording : startRecording}
+              className="px-4 py-2 rounded bg-blue-600 text-white"
+            >
+              {recording ? "🎙️ Stop" : "🎤 Start Recording"}
+            </button>
           </div>
-        )}
-
-        {responseText && (
-          <div className="justify-start">
-            <p className="bg-gray-100 inline-block p-3 rounded shadow max-w-md">
-            🤖 AI:{responseText}
-            </p>
-          </div>
-        )}
-
-        {audioUrl && (
-          <audio className="mt-2" controls src={audioUrl}>
-            Your browser does not support the audio element.
-          </audio>
-        )}
-
-        <div className="flex justify-center items-center mt-4">
-          <button
-            onClick={recording ? stopRecording : startRecording}
-            className="px-4 py-2 rounded bg-blue-600 text-white"
-          >
-            {recording ? "🎙️ Stop" : "🎤 Start Recording"}
-          </button>
         </div>
       </div>
-    </div>
+    </ProtectedRoute>
   );
 }

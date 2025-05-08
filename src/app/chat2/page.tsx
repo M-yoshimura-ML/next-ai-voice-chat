@@ -7,6 +7,7 @@ import Sidebar from "../../components/sidebar";
 import MainChat from "@/components/MainChat";
 import { Conversation, Message } from "@/models/commons";
 import { getUserConversations, getMessages } from "@/lib/conversation_api";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 export interface ChatPageProps {
   conversationId: string | null;
@@ -47,7 +48,6 @@ const ChatPage2: React.FC<ChatPageProps> = ({conversationId}) => {
   }, []);
 
   useEffect(() => {
-    console.log("conversationId", conversationId);
     if (conversationId) {
       fetchMessages(conversationId);
     }
@@ -62,22 +62,25 @@ const ChatPage2: React.FC<ChatPageProps> = ({conversationId}) => {
   };
 
   return (
-    <div className="flex h-screen container mx-auto">
-      {/* Sidebar */}
-      <Sidebar
-        conversations={conversations}
-        onNewConversation={handleNewConversation}
-        onSelectConversation={handleSelectConversation}
-        selectedIndex={selectedIndex}
-      />
+    <ProtectedRoute>
+      <div className="flex h-screen container mx-auto">
+        {/* Sidebar */}
+        <Sidebar
+          conversations={conversations}
+          onNewConversation={handleNewConversation}
+          onSelectConversation={handleSelectConversation}
+          selectedIndex={selectedIndex}
+        />
 
-      {/* Chat Area */}
-      <MainChat
-        conversationId={conversationId}
-        messageList={messages}
-      />
-    </div>
+        {/* Chat Area */}
+        <MainChat
+          conversationId={conversationId}
+          messageList={messages}
+        />
+      </div>
+    </ProtectedRoute>
   );
 };
+
 
 export default ChatPage2;
