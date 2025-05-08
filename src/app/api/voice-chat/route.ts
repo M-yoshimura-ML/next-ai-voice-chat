@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized: Token not provided" }, { status: 401 });
     }
 
-    const backendRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/voice-chat`, {
+    const backendRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/openai/voice-chat`, {
         method: "POST",
         headers: {
             // 'Content-Type': 'multipart/form-data',
