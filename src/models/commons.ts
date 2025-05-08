@@ -16,6 +16,15 @@ export interface LoginPayload {
 }
   
 export interface LoginResponseData {
+    user_id: string;
+}
+
+export interface mfaPayload {
+    user_id: string;
+    otp_code: string;
+}
+
+export interface mfaResponseData {
     access_token: string;
     token_type: string;
 }
