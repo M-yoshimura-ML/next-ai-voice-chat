@@ -1,65 +1,41 @@
+import { fetchJson } from "@/lib/api";
 import { ApiResponse, chatPayload, translatePayload, MessageBase } from '../models/commons';
 
-  
+
 export async function chatWithText(payload: chatPayload): Promise<ApiResponse<string>> {
     const token = localStorage.getItem("access_token");
     const tokenType = localStorage.getItem("token_type") || "Bearer";
-
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/chat`, {
+    return await fetchJson("/openai/chat", {
         method: 'POST',
+        body: JSON.stringify(payload),
         headers: {
-            'Content-Type': 'application/json',
             'Authorization': `${tokenType} ${token}`,
         },
-        body: JSON.stringify(payload),
     });
-  
-    const data = await res.json();
-    return {
-        status: data.status,
-        message: data.message,
-        data: data.data,
-    };
 }
+
 
 export async function translate(payload: translatePayload): Promise<ApiResponse<string>> {
     const token = localStorage.getItem("access_token");
     const tokenType = localStorage.getItem("token_type") || "Bearer";
-
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/translate`, {
+    return await fetchJson("/openai/translate", {
         method: 'POST',
+        body: JSON.stringify(payload),
         headers: {
-            'Content-Type': 'application/json',
             'Authorization': `${tokenType} ${token}`,
         },
-        body: JSON.stringify(payload),
     });
-  
-    const data = await res.json();
-    return {
-        status: data.status,
-        message: data.message,
-        data: data.data,
-    };
 }
+
 
 export async function textChat(payload: chatPayload): Promise<ApiResponse<MessageBase>> {
     const token = localStorage.getItem("access_token");
     const tokenType = localStorage.getItem("token_type") || "Bearer";
-
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/text-chat`, {
+    return await fetchJson("/openai/text-chat", {
         method: 'POST',
+        body: JSON.stringify(payload),
         headers: {
-            'Content-Type': 'application/json',
             'Authorization': `${tokenType} ${token}`,
         },
-        body: JSON.stringify(payload),
     });
-  
-    const data = await res.json();
-    return {
-        status: data.status,
-        message: data.message,
-        data: data.data,
-    };
 }

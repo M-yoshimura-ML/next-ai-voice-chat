@@ -23,7 +23,7 @@ const ChatPage2: React.FC<ChatPageProps> = ({conversationId}) => {
     const user_id = localStorage.getItem("user_id");
     let fetchedConversations: Conversation[] = [];
     if (user_id) {
-      const result = await getUserConversations(user_id);
+      const result = await getUserConversations();
       fetchedConversations = result.data ? result.data : [];
     }
     setConversations(fetchedConversations);
@@ -33,7 +33,7 @@ const ChatPage2: React.FC<ChatPageProps> = ({conversationId}) => {
     let fetchedMessages: Message[] = [];
     const result = await getMessages(conversationId);
     if (result.status === 200) {
-      fetchedMessages = result.data;
+      fetchedMessages = result.data ? result.data : [];
     } else {
       console.error("Error fetching messages:", result.message);
     }
