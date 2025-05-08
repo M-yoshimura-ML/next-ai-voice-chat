@@ -72,7 +72,7 @@ const MainChat: React.FC<MainChatProps> = ({
               messages: messageRequest
             });
           
-            const newConversationId = response.data.conversation_id;
+            const newConversationId = response.data?.conversationId;
             router.push(`/chat2/${newConversationId}`);
         } else {
             // Save messages to the existing conversation

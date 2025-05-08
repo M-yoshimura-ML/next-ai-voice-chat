@@ -27,6 +27,21 @@ export interface Conversation {
     createdAt: string;
 }
 
+export interface ConversationRequestBody {
+    userId: string;
+    title: string | null;
+    messages: MessageBase[];
+}
+
+export interface SaveMessagesRequestBody {
+    conversationId: string;
+    messages: MessageBase[];
+}
+
+export interface SaveConversationResponse{
+    conversationId: string;
+}
+
 export interface MessageBase {
     role: string;
     content: string;

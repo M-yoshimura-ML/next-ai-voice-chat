@@ -1,63 +1,52 @@
-import { MessageBase } from "@/models/commons";
+import { fetchJson } from "@/lib/api";
+import { ApiResponse, Message, Conversation, ConversationRequestBody, SaveMessagesRequestBody, SaveConversationResponse } from "@/models/commons";
 
-interface ConversationRequestBody {
-    userId: string;
-    title: string | null;
-    messages: MessageBase[];
+
+export async function createConversationAndMessages(payload: ConversationRequestBody): Promise<ApiResponse<SaveConversationResponse>> {
+    const token = localStorage.getItem("access_token");
+    const tokenType = localStorage.getItem("token_type") || "Bearer";
+    return await fetchJson("/history/save", {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: {
+            'Authorization': `${tokenType} ${token}`,
+        },
+    });
 }
 
-interface SaveMessagesRequestBody {
-    conversationId: string;
-    messages: MessageBase[];
+
+export async function getUserConversations(): Promise<ApiResponse<Conversation[]>> {
+    const token = localStorage.getItem("access_token");
+    const tokenType = localStorage.getItem("token_type") || "Bearer";
+    return await fetchJson(`/history/user-conversations`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `${tokenType} ${token}`,
+        },
+    });
 }
 
-export const createConversationAndMessages = async (payload: ConversationRequestBody) => {
-    const token = localStorage.getItem("access_token");
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/history`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-    });
-    return await response.json();
-};
 
-export const getUserConversations = async (user_id: string) => {
+export async function getMessages(conversation_id: string): Promise<ApiResponse<Message[]>> {
     const token = localStorage.getItem("access_token");
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/user-conversations?user_id=${user_id}`, {
-        method: "GET",
+    const tokenType = localStorage.getItem("token_type") || "Bearer";
+    return await fetchJson(`/history/conversation-messages?conversation_id=${conversation_id}`, {
+        method: 'GET',
         headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
+            'Authorization': `${tokenType} ${token}`,
         },
     });
-    return await response.json();
-};
+}
 
 
-export const getMessages = async (conversation_id: string) => {
+export async function saveMessages(payload: SaveMessagesRequestBody): Promise<ApiResponse> {
     const token = localStorage.getItem("access_token");
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/conversation-messages?conversation_id=${conversation_id}`, {
-        method: "GET",
+    const tokenType = localStorage.getItem("token_type") || "Bearer";
+    return await fetchJson("/history/save-messages", {
+        method: 'POST',
+        body: JSON.stringify(payload),
         headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
+            'Authorization': `${tokenType} ${token}`,
         },
     });
-    return await response.json();
-};
-
-export const saveMessages = async (payload: SaveMessagesRequestBody) => {
-    const token = localStorage.getItem("access_token");
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/save-messages`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-    });
-    return await response.json();
-};
+}
