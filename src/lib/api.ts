@@ -1,7 +1,7 @@
 import { ApiResponse } from '../models/commons';
 
 // This file is used to fetch data from the API. It uses the fetch API to make requests to the API.
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL_NEW;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 if (!API_BASE_URL) {
   throw new Error("Missing Base URL for API.");
@@ -42,3 +42,18 @@ export async function fetchJson<T = any>(
   };
 }
 
+export async function fetchJsonWithAuth<T = any>(
+  endpoint: string,
+  options?: RequestInit
+): Promise<ApiResponse<T>> {
+  const token = localStorage.getItem('access_token');
+  const tokenType = localStorage.getItem('token_type') || 'Bearer';
+
+  return await fetchJson<T>(endpoint, {
+    ...options,
+    headers: {
+      ...(options?.headers || {}),
+      Authorization: `${tokenType} ${token}`,
+    },
+  });
+}

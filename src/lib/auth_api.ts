@@ -1,4 +1,4 @@
-import { fetchJson } from "@/lib/api";
+import { fetchJson, fetchJsonWithAuth } from "@/lib/api";
 import { ApiResponse, SignupPayload, LoginPayload, LoginResponseData } from '../models/commons';
 
 export async function signupUser(payload: SignupPayload): Promise<ApiResponse> {
@@ -16,12 +16,7 @@ export async function loginUser(payload: LoginPayload): Promise<ApiResponse<Logi
 }
 
 export async function refreshToken(): Promise<ApiResponse<LoginResponseData>> {
-  const token = localStorage.getItem("access_token");
-  const tokenType = localStorage.getItem("token_type") || "Bearer";
-  return await fetchJson("/auth/refresh-token", {
+  return await fetchJsonWithAuth("/auth/refresh-token", {
     method: 'POST',
-    headers: {
-      'Authorization': `${tokenType} ${token}`,
-  },
   });
 }

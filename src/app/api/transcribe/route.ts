@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        const backendRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/transcribe`, {
+        const backendRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/openai/transcribe`, {
           method: "POST",
           headers: {
             'Authorization': authorizationHeader,
