@@ -23,7 +23,7 @@ export default function Login() {
 
         const result = await login(email, password);
         if (result.success) {
-            router.push("/chat2"); 
+            router.push("/mfa"); 
         } else {
             setError(result.message || "Login failed. Please try again.");
         }

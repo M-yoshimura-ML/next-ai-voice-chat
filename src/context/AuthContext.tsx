@@ -2,12 +2,13 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { loginUser, refreshToken } from "@/lib/auth_api";
+import { loginUser, mfaUser, refreshToken } from "@/lib/auth_api";
 import { jwtDecode } from "jwt-decode";
 
 type AuthContextType = {
     isAuthenticated: boolean;
     login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
+    mfa: (otp_code: string) => Promise<{ success: boolean; message: string }>;
     logout: () => void;
 };
 
@@ -70,19 +71,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
             const response = await loginUser({ email, password });
             if (response.status === 200 && response.data) {
-                const { access_token, token_type } = response.data;
-                localStorage.setItem("access_token", access_token);
-                localStorage.setItem("token_type", token_type);
-                const userId = getUserId(access_token);
-                if (userId) {
-                    localStorage.setItem("user_id", userId);
+                const { user_id } = response.data;
+                if (user_id) {
+                    localStorage.setItem("user_id", user_id);
                 } else {
                     console.error("User ID not found in token");
                 }
-                setIsAuthenticated(true);
-                setToken(access_token);
-
-                scheduleTokenRefresh(access_token); // set the refresh time
 
                 return { success: true, message: "Login successful" };
             } else {
@@ -92,8 +86,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             console.error("Login error:", error);
             return { success: false, message: error?.message || "An error occurred during login" };
         }
-
     };
+
+    const mfa = async (otp_code: string) => {
+        const user_id = localStorage.getItem("user_id");
+        if (!user_id) {
+            console.error("User ID not found in local storage");
+            return { success: false, message: "User ID not found" };
+        }
+        try {
+            const response = await mfaUser({ user_id, otp_code });
+            if (response.status === 200 && response.data) {
+                const { access_token, token_type } = response.data;
+                localStorage.setItem("access_token", access_token);
+                localStorage.setItem("token_type", token_type);
+                setIsAuthenticated(true);
+                setToken(access_token);
+                scheduleTokenRefresh(access_token); // set the refresh time
+                return { success: true, message: "MFA successful" };
+            } else {
+                return { success: false, message: response.message || "MFA failed" };
+            }
+        } catch (error: any) {
+            console.error("MFA error:", error);
+            return { success: false, message: error?.message || "An error occurred during MFA" };
+        }
+    }
 
     const logout = () => {
         setIsAuthenticated(false);
@@ -148,7 +166,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, login, mfa, logout }}>
             {children}
         </AuthContext.Provider>
     );
