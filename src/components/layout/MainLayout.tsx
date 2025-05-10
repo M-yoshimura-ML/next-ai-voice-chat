@@ -10,7 +10,8 @@ import { AiOutlineHome } from "react-icons/ai";
 import { GrProjects, GrLogin, GrLogout } from "react-icons/gr";
 import { FaAngleRight, FaCheck, FaCheckDouble } from "react-icons/fa";
 import { IoIosHelpCircleOutline } from "react-icons/io";
-import { SiSinglestore } from "react-icons/si"; 
+import { CiSettings } from "react-icons/ci";
+import { IoSettingsOutline } from "react-icons/io5";
 import { MdOutlineRecordVoiceOver } from "react-icons/md";
 import { RiVoiceAiLine } from "react-icons/ri";
 
@@ -40,10 +41,14 @@ const MainLayout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
                                         <MdOutlineRecordVoiceOver className="mr-2" />
                                         <Link href="/chat2">Text Chat</Link>
                                     </li>
-                                    <li className="flex justify-start items-center p-2 hover:bg-blue-200 rounded-lg transition duration-200 ease-in-out">
+                                    {/* <li className="flex justify-start items-center p-2 hover:bg-blue-200 rounded-lg transition duration-200 ease-in-out">
                                         <GrProjects className="mr-2" />
                                         <h3 className="flex-1">Projects</h3>
                                         <FaAngleRight className="ml-auto" />
+                                    </li> */}
+                                    <li className="flex justify-start items-center p-2 hover:bg-blue-200 rounded-lg transition duration-200 ease-in-out">
+                                        <IoSettingsOutline className="mr-2" />
+                                        <Link href="/settings">Settings</Link>
                                     </li>
                                     <li className="flex items-center p-2 hover:bg-blue-200 rounded-lg cursor-pointer" onClick={logout}>
                                         <GrLogout className="mr-2" />
