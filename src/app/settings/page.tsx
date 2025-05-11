@@ -24,13 +24,28 @@ const llmModels = [
 export default function SettingsPage() {
   const { settings, updateSettings } = useSettings();
   const [localSettings, setLocalSettings] = useState(settings);
+  const [message, setMessage] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
 
   const handleChange = (key: any, value: any) => {
     setLocalSettings({ ...localSettings, [key]: value });
   };
 
-  const handleSave = () => {
-    updateSettings(localSettings);
+  const handleSave = async () => {
+    try {   
+        const result = await updateSettings(localSettings);
+        if (result.success) {
+            setMessage(result.message);
+            setIsSuccess(true);
+        } else {
+            setMessage(result.message);
+            setIsSuccess(false);
+        }
+    } catch (error) {
+        console.error("Error saving settings:", error);
+        setMessage("Failed to save settings. Please try again.");
+        setIsSuccess(false);
+    }
   };
 
   return (
@@ -64,8 +79,8 @@ export default function SettingsPage() {
                 <div className="w-full max-w-[500px] mb-4">
                     <label className="block font-medium">LLM</label>
                     <Select
-                        value={localSettings.model}
-                        onValueChange={(val) => handleChange("model", val )}
+                        value={localSettings.textModel}
+                        onValueChange={(val) => handleChange("textModel", val )}
                     >
                         {llmModels.map((m) => (
                             <SelectItem key={m.value} value={m.value}>
@@ -85,6 +100,11 @@ export default function SettingsPage() {
                         placeholder="あなたは親切なアシスタントです。ユーザーの意図を的確にくみ取り、簡潔に回答してください。"
                     />
                 </div>
+                {message && (
+                    <p className={`mt-4 text-sm ${isSuccess ? "text-green-600" : "text-red-600"}`}>
+                        {message}
+                    </p>
+                )}
 
                 <Button onClick={handleSave}>Save Settings</Button>
             </div>
