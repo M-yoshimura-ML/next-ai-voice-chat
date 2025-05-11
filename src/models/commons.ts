@@ -74,3 +74,12 @@ export interface translatePayload {
     text: string;
     target_language: string;
 }
+
+export interface UserSettings {
+    language: string;
+    textModel: string;
+    speechModel: string;
+    transcribeModel: string;
+    useHistory: boolean;
+    promptTemplate: string;
+}
