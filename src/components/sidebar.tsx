@@ -6,15 +6,11 @@ import { Conversation } from '../models/commons'
 interface SidebarProps {
   conversations: Conversation[];
   onNewConversation: () => void;
-  onSelectConversation: (index: number) => void;
-  selectedIndex: number;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
   conversations,
-  onNewConversation,
-  onSelectConversation,
-  selectedIndex,
+  onNewConversation
 }) => {
   const router = useRouter();
   const handleSelectedConversation = (id: string) => {
@@ -33,9 +29,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {conversations.map((conversation, index) => (
           <li
             key={index}
-            className={`mb-2 cursor-pointer p-2 rounded hover:bg-gray-800 ${
-              selectedIndex === index ? "bg-gray-800" : ""
-            }`}
+            className={`mb-2 cursor-pointer p-2 rounded hover:bg-gray-800`}
             onClick={() => handleSelectedConversation(conversation.id.toString())}
           >
             {conversation.title}

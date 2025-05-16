@@ -18,7 +18,6 @@ const ChatPage2: React.FC<ChatPageProps> = ({conversationId}) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const router = useRouter();
 
@@ -55,23 +54,11 @@ const ChatPage2: React.FC<ChatPageProps> = ({conversationId}) => {
     }
   }, [conversationId]);
 
-  // useEffect(() => {
-  //   const updateLayout = () => {
-  //     setIsCompactLayout(window.innerWidth < 1024); // Tailwind's `lg`
-  //   };
-
-  //   updateLayout(); // Initial check
-  //   window.addEventListener("resize", updateLayout);
-  //   return () => window.removeEventListener("resize", updateLayout);
-  // }, []);
 
   const handleNewConversation = () => {
     router.push("/chat2")
   };
 
-  const handleSelectConversation = (index: number) => {
-    setSelectedIndex(index);
-  };
 
   return (
     <ProtectedRoute>
@@ -88,8 +75,6 @@ const ChatPage2: React.FC<ChatPageProps> = ({conversationId}) => {
             <Sidebar
               conversations={conversations}
               onNewConversation={handleNewConversation}
-              onSelectConversation={handleSelectConversation}
-              selectedIndex={selectedIndex}
             />
           </div>
         )}
