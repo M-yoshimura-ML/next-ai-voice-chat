@@ -8,6 +8,7 @@ import MainChat from "@/components/MainChat";
 import { Conversation, Message } from "@/models/commons";
 import { getUserConversations, getMessages } from "@/lib/conversation_api";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { BiSidebar } from "react-icons/bi";
 
 export interface ChatPageProps {
   conversationId: string | null;
@@ -17,7 +18,7 @@ const ChatPage2: React.FC<ChatPageProps> = ({conversationId}) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const router = useRouter();
 
   const fetchConversations = async () => {
@@ -53,24 +54,31 @@ const ChatPage2: React.FC<ChatPageProps> = ({conversationId}) => {
     }
   }, [conversationId]);
 
+
   const handleNewConversation = () => {
     router.push("/chat2")
   };
 
-  const handleSelectConversation = (index: number) => {
-    setSelectedIndex(index);
-  };
 
   return (
     <ProtectedRoute>
       <div className="flex h-screen container mx-auto">
-        {/* Sidebar */}
-        <Sidebar
-          conversations={conversations}
-          onNewConversation={handleNewConversation}
-          onSelectConversation={handleSelectConversation}
-          selectedIndex={selectedIndex}
-        />
+        {/*Sidebar Toggle Button*/}
+        <button
+          className="fixed top-2 left-4 z-50 p-2 bg-blue-600 text-white rounded-full"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}  
+        > 
+          <BiSidebar size={24} />
+        </button>
+        {isSidebarOpen && (
+          <div className={`fixed left-0 z-50 lg:relative lg:z-0 lg:block`}>
+            <Sidebar
+              conversations={conversations}
+              onNewConversation={handleNewConversation}
+            />
+          </div>
+        )}
+        
 
         {/* Chat Area */}
         <MainChat
