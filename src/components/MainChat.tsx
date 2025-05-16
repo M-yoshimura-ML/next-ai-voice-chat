@@ -142,35 +142,35 @@ const MainChat: React.FC<MainChatProps> = ({
     }
 
     return (
-        <main className="flex-1 flex flex-col bg-white">
-            <div className="p-6 overflow-y-auto flex-1">
-            <div className="space-y-4 mx-8">
-                {messages.map((msg, index) => (
-                    <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <p className={`bg-${msg.role === 'user' ? 'blue-100' : 'gray-100'} inline-block p-3 rounded shadow max-w-md`}>
-                            {msg.role === "assistant" && msg.translatedContent && showTranslations[index]
-                                ? msg.translatedContent
-                                : msg.content}
-                        </p>
-                        {msg.role === 'assistant' && msg.audioUrl && (
-                            <AudioPlayer audioUrl={msg.audioUrl} />
-                        )}
-                        {msg.role === "assistant" && msg.translatedContent && (
-                            <BsTranslate
-                                className="text-gray-500 cursor-pointer mx-2 mt-1"
-                                size={24}
-                                onClick={() => toggleTranslation(index)}
-                                title="Toggle translation"
-                            />
-                        )}
-                    </div>
-                ))}
-                {isLoading && ( 
-                    <div className="flex justify-center items-center mt-4">
-                        <img src="/Spinner-5.gif" alt="Loading..." className="w-12 h-12 animate-spin" />
-                    </div>
-                )}
-            </div>
+        <main className="flex-1 flex flex-col bg-gray-300">
+            <div className="overflow-y-auto p-6">
+                <div className="space-y-4 mx-8">
+                    {messages.map((msg, index) => (
+                        <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                            <p className={`bg-${msg.role === 'user' ? 'blue-100' : 'gray-100'} inline-block p-3 rounded shadow max-w-md`}>
+                                {msg.role === "assistant" && msg.translatedContent && showTranslations[index]
+                                    ? msg.translatedContent
+                                    : msg.content}
+                            </p>
+                            {msg.role === 'assistant' && msg.audioUrl && (
+                                <AudioPlayer audioUrl={msg.audioUrl} />
+                            )}
+                            {msg.role === "assistant" && msg.translatedContent && (
+                                <BsTranslate
+                                    className="text-gray-500 cursor-pointer mx-2 mt-1"
+                                    size={24}
+                                    onClick={() => toggleTranslation(index)}
+                                    title="Toggle translation"
+                                />
+                            )}
+                        </div>
+                    ))}
+                    {isLoading && ( 
+                        <div className="flex justify-center items-center mt-4">
+                            <img src="/Spinner-5.gif" alt="Loading..." className="w-12 h-12 animate-spin" />
+                        </div>
+                    )}
+                </div>
             </div>
 
             <div className="p-4 border-t flex items-center space-x-2 m-8">

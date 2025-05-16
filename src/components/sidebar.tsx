@@ -22,14 +22,14 @@ const Sidebar: React.FC<SidebarProps> = ({
   }
 
   return (
-    <aside className="w-64 bg-gray-900 text-white p-4">
+    <aside className="w-64 h-screen flex flex-col bg-gray-900 text-white p-4">
       <button
         onClick={onNewConversation}
         className="mb-4 bg-blue-600 w-full py-2 rounded"
       >
         + New Chat
       </button>
-      <ul>
+      <ul className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
         {conversations.map((conversation, index) => (
           <li
             key={index}

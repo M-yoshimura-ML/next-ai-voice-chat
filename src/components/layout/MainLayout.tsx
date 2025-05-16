@@ -20,11 +20,11 @@ const MainLayout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
     const { isMenuOpen, toggleMenu } = useContext(MenuContext);
     const { isAuthenticated, logout } = useAuth();
     return (
-        <div className="min-h-screen bg-gray-100 w-full">
+        <div className="flex flex-col h-screen bg-gray-100 w-full">
             <MainHeader />
             <div className="relative flex-1">
                 {isMenuOpen && (
-                    <aside className="fixed top-16 left-0 z-50 bg-white w-60 h-full shadow-lg p-4 rounded-r-lg transition duration-300 ease-in-out">
+                    <aside className="fixed top-16 right-0 z-50 bg-white w-60 shadow-lg p-4 rounded-r-lg transition duration-300 ease-in-out">
                         <ul>
                             <li className="flex justify-start items-center p-2 hover:bg-blue-200 rounded-lg transition duration-200 ease-in-out">
                                 <AiOutlineHome className="mr-2" />
