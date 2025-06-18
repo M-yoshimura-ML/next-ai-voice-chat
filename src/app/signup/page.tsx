@@ -35,8 +35,8 @@ const Signup = () => {
             }
         } catch (err: any) {
             console.error("Signup error:", err);
-            if (err.status === 400 || err.status === 422) {
-                setMessage(err.message);
+            if (err?.status === 400 || err?.status === 422) {
+                setMessage(err?.message);
              } else {
                 setMessage("Server error. Please try again later.");
             }

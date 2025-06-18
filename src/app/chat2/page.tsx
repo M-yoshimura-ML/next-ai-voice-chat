@@ -1,8 +1,7 @@
-// pages/chat.tsx
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Sidebar from "../../components/sidebar";
 import MainChat from "@/components/MainChat";
 import { Conversation, Message } from "@/models/commons";
@@ -14,10 +13,12 @@ export interface ChatPageProps {
   conversationId: string | null;
 }
 
-const ChatPage2: React.FC<ChatPageProps> = ({conversationId}) => {
+const ChatPage2: React.FC = () => {
+  const params = useParams();
+  const conversationId = params?.conversationId as string | null;
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(false);
+  //const [loading, setLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const router = useRouter();
 
@@ -43,9 +44,9 @@ const ChatPage2: React.FC<ChatPageProps> = ({conversationId}) => {
   }
 
   useEffect(() => {
-    setLoading(true);
+    //setLoading(true);
     fetchConversations();
-    setLoading(false);
+    //setLoading(false);
   }, []);
 
   useEffect(() => {
