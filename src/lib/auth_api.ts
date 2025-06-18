@@ -11,6 +11,7 @@ export async function signupUser(payload: SignupPayload): Promise<ApiResponse> {
 export async function loginUser(payload: LoginPayload): Promise<ApiResponse<LoginResponseData>> {
   return await fetchJson("/auth/login", {
     method: 'POST',
+    credentials: "include",
     body: JSON.stringify(payload),
   });
 }
@@ -18,6 +19,7 @@ export async function loginUser(payload: LoginPayload): Promise<ApiResponse<Logi
 export async function mfaUser(payload: mfaPayload): Promise<ApiResponse<mfaResponseData>> {
   return await fetchJson(`/auth/mfa?user_id=${payload.user_id}&otp=${payload.otp_code}`, {
     method: 'POST',
+    credentials: "include",
   });
 }
 
