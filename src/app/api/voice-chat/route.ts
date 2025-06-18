@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
     const formData = await req.formData();
-    const audioFile = formData.get("audio_file");
+    //const audioFile = formData.get("audio_file");
 
     const authorizationHeader = req.headers.get("Authorization");
     const token = authorizationHeader?.split(" ")[1]; // "Bearer <token>"

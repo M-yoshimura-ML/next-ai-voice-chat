@@ -27,7 +27,7 @@ export default function SettingsPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
 
-  const handleChange = (key: any, value: any) => {
+  const handleChange = (key: string, value: any) => {
     setLocalSettings({ ...localSettings, [key]: value });
   };
 

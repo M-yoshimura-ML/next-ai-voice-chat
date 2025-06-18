@@ -86,24 +86,24 @@ const MainChat: React.FC<MainChatProps> = ({
         }
     }
 
-    const getAIResponse = async(message: string, history: MessageBase[]) => {
-        const chatPayload = {
-            message: message,
-            history: history, 
-            language: 'en',
-        }
-        const aiResponse: ApiResponse<string> = await chatWithText(chatPayload); 
-        let aiAnswer = aiResponse?.data ?? "Sorry, I can't help you with that.";
+    // const getAIResponse = async(message: string, history: MessageBase[]) => {
+    //     const chatPayload = {
+    //         message: message,
+    //         history: history, 
+    //         language: 'en',
+    //     }
+    //     const aiResponse: ApiResponse<string> = await chatWithText(chatPayload); 
+    //     let aiAnswer = aiResponse?.data ?? "Sorry, I can't help you with that.";
 
-        const tranalateResponse = await translate({text:aiAnswer, target_language: 'ja'});
-        const translatedText = tranalateResponse?.data ?? null;
+    //     const tranalateResponse = await translate({text:aiAnswer, target_language: 'ja'});
+    //     const translatedText = tranalateResponse?.data ?? null;
 
-        const ttsResponse = await ttsWithAudioUrl({text:aiAnswer, language:'en' });
-        const audioUrl = ttsResponse?.data?.audio_url ?? null;
+    //     const ttsResponse = await ttsWithAudioUrl({text:aiAnswer, language:'en' });
+    //     const audioUrl = ttsResponse?.data?.audio_url ?? null;
 
-        setMessages((prev) => [...prev, {role: 'assistant', content: aiAnswer, audioUrl: audioUrl, translatedContent: translatedText}]);
-        return {role: 'assistant', content: aiAnswer, audioUrl: audioUrl, translatedContent: translatedText};
-    }
+    //     setMessages((prev) => [...prev, {role: 'assistant', content: aiAnswer, audioUrl: audioUrl, translatedContent: translatedText}]);
+    //     return {role: 'assistant', content: aiAnswer, audioUrl: audioUrl, translatedContent: translatedText};
+    // }
 
     const getTextResponse = async(message: string, history: MessageBase[]) => {
         const chatPayload = {
