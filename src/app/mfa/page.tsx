@@ -27,14 +27,14 @@ export default function MfaPage() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 text-black dark:text-white">
             <form onSubmit={handleMfaSubmit} className="bg-white p-6 rounded shadow-md w-96">
                 <input
                     type="text"
                     placeholder="Enter OTP"
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
-                    className="border border-gray-300 rounded p-2 w-full"
+                    className="bg-gray-100 dark:bg-gray-800 border border-gray-300 rounded p-2 w-full"
                 />
                 <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 mt-4">
                     Verify OTP
