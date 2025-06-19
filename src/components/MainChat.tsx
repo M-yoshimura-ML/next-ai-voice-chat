@@ -142,12 +142,12 @@ const MainChat: React.FC<MainChatProps> = ({
     }
 
     return (
-        <main className="flex-1 flex flex-col bg-gray-300">
+        <main className="flex-1 flex flex-col bg-gray-300 dark:bg-gray-900 text-black dark:text-white">
             <div className="overflow-y-auto p-6">
                 <div className="space-y-4 mx-8">
                     {messages.map((msg, index) => (
                         <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                            <p className={`bg-${msg.role === 'user' ? 'blue-100' : 'gray-100'} inline-block p-3 rounded shadow max-w-md`}>
+                            <p className={`bg-${msg.role === 'user' ? 'blue-100 dark:bg-blue-800' : 'gray-100 dark:bg-gray-800'} inline-block p-3 rounded shadow max-w-md`}>
                                 {msg.role === "assistant" && msg.translatedContent && showTranslations[index]
                                     ? msg.translatedContent
                                     : msg.content}
@@ -180,7 +180,7 @@ const MainChat: React.FC<MainChatProps> = ({
                     onKeyDown={handleKeyDown}
                     type="text" 
                     placeholder="Talk or input text..." 
-                    className="flex-1 border rounded px-4 py-2" />
+                    className="bg-gray-100 dark:bg-gray-800 flex-1 border rounded px-4 py-2" />
                 <IoMdSend 
                     onClick={() => {
                         sendMessage();

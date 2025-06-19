@@ -54,7 +54,7 @@ export default function Recorder() {
 
   return (
     <ProtectedRoute>
-        <div className="relative flex flex-col items-center justify-between min-h-screen bg-gray-100">
+        <div className="relative flex flex-col items-center justify-between min-h-screen bg-gray-100 dark:bg-gray-900 text-black dark:text-white">
             <div className="text-2xl font-bold mb-4">Voice Chat</div>
             <div className="w-full max-w-5xl flex-1 overflow-y-auto scroll-smooth  space-y-4 px-4">
 
@@ -65,7 +65,7 @@ export default function Recorder() {
                     >
                         <div
                             className={`inline-block p-3 rounded shadow max-w-md ${
-                                msg.role === "user" ? "bg-blue-100" : "bg-gray-100"
+                                msg.role === "user" ? "bg-blue-100 dark:bg-blue-800" : "bg-gray-100 dark:bg-gray-800"
                             }`}
                         >
                             <p>{msg.role === "assistant" ? "🤖 " : ""}{msg.content}</p>

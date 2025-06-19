@@ -14,7 +14,7 @@ export function Select<T extends string>({ value, className, onValueChange, chil
     <select
       value={value}
       className={cn(
-        "w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-500",
+        "w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-500 bg-gray-200 dark:bg-gray-800",
         className
       )}
       onChange={(e) => onValueChange(e.target.value as T)}

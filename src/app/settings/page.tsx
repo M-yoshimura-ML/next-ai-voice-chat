@@ -50,7 +50,7 @@ export default function SettingsPage() {
 
   return (
     <ProtectedRoute>
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 text-black dark:text-white">
             <div className="w-full max-w-[900px] p-4">
                 <h1 className="text-2xl font-bold mb-4">User Settings</h1>
 
@@ -96,7 +96,7 @@ export default function SettingsPage() {
                         value={localSettings.promptTemplate}
                         onChange={(e) => handleChange("promptTemplate", e.target.value)}
                         rows={6}
-                        className="w-full p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="bg-gray-200 dark:bg-gray-800 w-full p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="あなたは親切なアシスタントです。ユーザーの意図を的確にくみ取り、簡潔に回答してください。"
                     />
                 </div>

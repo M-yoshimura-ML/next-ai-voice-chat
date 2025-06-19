@@ -31,7 +31,7 @@ export default function Login() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 text-black dark:text-white">
         <h1 className="text-3xl font-bold mb-4">Login</h1>
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-96">
             <div className="mb-4">
@@ -41,7 +41,7 @@ export default function Login() {
                     id="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="border border-gray-300 rounded p-2 w-full" />
+                    className="bg-gray-100 dark:bg-gray-800 border border-gray-300 rounded p-2 w-full" />
             </div>
             <div className="mb-4">
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">Password</label>
@@ -50,7 +50,7 @@ export default function Login() {
                     id="password" 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="border border-gray-300 rounded p-2 w-full" />
+                    className="bg-gray-100 dark:bg-gray-800 border border-gray-300 rounded p-2 w-full" />
             </div>
             {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
             <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Login</button>

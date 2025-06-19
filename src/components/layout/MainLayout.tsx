@@ -22,7 +22,7 @@ const MainLayout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
             <MainHeader />
             <div className="relative flex-1">
                 {isMenuOpen && (
-                    <aside className="fixed top-16 right-0 z-50 bg-white w-60 shadow-lg p-4 rounded-r-lg transition duration-300 ease-in-out">
+                    <aside className="fixed top-16 right-0 z-50 bg-white dark:bg-gray-800 text-black dark:text-white w-60 shadow-lg p-4 rounded-r-lg transition duration-300 ease-in-out">
                         <ul>
                             <li className="flex justify-start items-center p-2 hover:bg-blue-200 rounded-lg transition duration-200 ease-in-out">
                                 <AiOutlineHome className="mr-2" />

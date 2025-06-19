@@ -25,12 +25,12 @@ export default function Recorder() {
 
   return (
     <ProtectedRoute>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 text-black dark:text-white">
         <div className="text-2xl font-bold mb-4">Voice Chat</div>
         <div className="space-y-4 mx-8">
           {userInput && (
             <div className="justify-end">
-              <p className="bg-blue-100 inline-block p-3 rounded shadow max-w-md">
+              <p className="bg-blue-100 dark:bg-blue-800 inline-block p-3 rounded shadow max-w-md">
                 {userInput}
               </p>
             </div>
@@ -44,7 +44,7 @@ export default function Recorder() {
 
           {responseText && (
             <div className="justify-start">
-              <p className="bg-gray-100 inline-block p-3 rounded shadow max-w-md">
+              <p className="bg-gray-100 dark:bg-gray-800 inline-block p-3 rounded shadow max-w-md">
               🤖 AI:{responseText}
               </p>
             </div>
